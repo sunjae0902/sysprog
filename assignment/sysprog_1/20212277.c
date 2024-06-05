@@ -1,8 +1,8 @@
-#include "functions.h"
+#include "20212277.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-void storeInputData(char **input, int size, int bits) { // bit (8,32,64) 단위로 쪼개어 2차원 문자열 포인터에 저장
+void storeInputData(char **input, int size, int bits) { // 각 데이터 타입의 크기에 맞는 bit (8,32,64) 단위로 쪼개어 2차원 문자열 포인터에 저장
     int len = (size % bits == 0) ? size / bits : size / bits+1;
     FILE *f = fopen("input","rb");
     if(f == NULL){
@@ -10,7 +10,7 @@ void storeInputData(char **input, int size, int bits) { // bit (8,32,64) 단위�
     }
     {
         fseek(f, -(bits+1), SEEK_END);
-        for(int i = 0; i < len ; i++){
+        for(int i = 0; i < len ; i++){ // 리틀 엔디언 방식으로 뒤에서부터 저장
             if(i > 0)
                 fseek(f, -2 * bits, SEEK_CUR);
             for (int j = 0; j < bits; j++) {
@@ -21,7 +21,7 @@ void storeInputData(char **input, int size, int bits) { // bit (8,32,64) 단위�
     }
 }
 
-void binaryToSignedChar(const char **input, int bits){ // 메모리에 저장된 비트열을 signed char로 변환 (-128~127)
+void binaryToSignedChar(const char **input, int bits){ // 메모리에 저장된 비트열을 signed char로 변환 후 출력 (-128~127)
     int numBytes = (bits + 7) / 8;
     int i, j, k;
     for (i = 0; i < numBytes; ++i) {
@@ -31,15 +31,13 @@ void binaryToSignedChar(const char **input, int bits){ // 메모리에 저장된
             if (k < bits) {
                 byte <<= 1;
                 byte |= (input[k / 8][k % 8] - '0');
-            } else {
-                byte <<= 1;
             }
         }
         printf("%d ",byte);
     }
 }
 
-void binaryToASCII(const char **input, int bits){  // 메모리에 저장된 비트열을 signed char로 변환하여 그에 해당하는 ascii code 출력
+void binaryToASCII(const char **input, int bits){  // 메모리에 저장된 비트열을 signed char(1바이트)로 변환하여 그에 해당하는 ascii code 출력
     int numBytes = (bits + 7) / 8;
     int i, j, k;
     for (i = 0; i < numBytes; ++i) {
@@ -49,15 +47,13 @@ void binaryToASCII(const char **input, int bits){  // 메모리에 저장된 비
             if (k < bits) {
                 byte <<= 1;
                 byte |= (input[k / 8][k % 8] - '0');
-            } else {
-                byte <<= 1;
             }
         }
         printf("%c ",((int)byte < 0 || (int)byte > 127) ? '.' : byte);
     }
 }
 
-void binaryToUnsignedChar(const char **input, int bits){  // 메모리에 저장된 비트열을 unsigned char로 변환
+void binaryToUnsignedChar(const char **input, int bits){  // 메모리에 저장된 비트열을 unsigned char(1바이트)로 변환 후 출력
     int numBytes = (bits + 7) / 8;
     int i, j, k;
     for (i = 0; i < numBytes; ++i) {
@@ -67,18 +63,16 @@ void binaryToUnsignedChar(const char **input, int bits){  // 메모리에 저장
             if (k < bits) {
                 byte <<= 1;
                 byte |= (input[k / 8][k % 8] - '0');
-            } else {
-                byte <<= 1;
-            }
+            } 
         }
         printf("%d ",byte);
     }
 }
 
-void binaryToSignedInt(const char **input, int bits){  // 메모리에 저장된 비트열을 signed int로 변환
+void binaryToSignedInt(const char **input, int bits){  // 메모리에 저장된 비트열을 signed int(4바이트)로 변환 후 출력
     int numBytes = (bits + 31) / 32;
-    int i, j, k, r = 0;
-    
+    int i, j, k;
+   
     for (i = 0; i < numBytes; ++i) {
         signed int byte = 0;
         for (j = 0; j < 32; ++j) {
@@ -86,15 +80,13 @@ void binaryToSignedInt(const char **input, int bits){  // 메모리에 저장된
             if (k < bits) {
                 byte <<= 1;
                 byte |= (input[k / 32][k % 32] - '0');
-            } else {
-                byte <<= 1;
             }
         }
         printf("%d ",byte);
     }
 }
 
-void binaryToUnsignedInt(const char **input, int bits){  // 메모리에 저장된 비트열을 unsigned int로 변환
+void binaryToUnsignedInt(const char **input, int bits){  // 메모리에 저장된 비트열을 unsigned int(4바이트)로 변환 후 출력
     int numBytes = (bits + 31) / 32;
     int i, j, k;
     for (i = 0; i < numBytes; ++i) {
@@ -104,15 +96,13 @@ void binaryToUnsignedInt(const char **input, int bits){  // 메모리에 저장�
             if (k < bits) {
                 byte <<= 1;
                 byte |= (input[k / 32][k % 32] - '0');
-            } else {
-                byte <<= 1;
             }
         }
         printf("%u ",byte);
     }
 }
 
-void binaryToFloat(const char **input, int bits){  // 메모리에 저장된 비트열을 float로 변환
+void binaryToFloat(const char **input, int bits){  // 메모리에 저장된 비트열을 float(4바이트)로 변환 후 소수점 아래 4자리까지 출력
     int numBytes = (bits + 31) / 32;
     int i, j, k;
     for (i = 0; i < numBytes; ++i) {
@@ -122,15 +112,13 @@ void binaryToFloat(const char **input, int bits){  // 메모리에 저장된 비
             if (k < bits) {
                 byte <<= 1;
                 byte |= (input[k / 32][k % 32] - '0');
-            } else {
-                byte <<= 1;
             }
         }
         printf("%.4f ",(float)byte);
     }
 }
 
-void binaryToDouble(const char **input, int bits){  // 메모리에 저장된 비트열을 double로 변환
+void binaryToDouble(const char **input, int bits){  // 메모리에 저장된 비트열을 double(8바이트)로 변환 후 소수점 아래 4자리까지 출력
     int numBytes = (bits + 63) / 64;
     
     int i, j, k;
@@ -141,8 +129,6 @@ void binaryToDouble(const char **input, int bits){  // 메모리에 저장된 �
             if (k < bits) {
                 byte <<= 1;
                 byte |= (input[k / 64][k % 64] - '0');
-            } else {
-                byte <<= 1;
             }
         }
         printf("%.4lf ",(double)byte);
@@ -153,16 +139,16 @@ int main (void){
     FILE *f = fopen("input","rb");
     int curpos = ftell(f);
     fseek(f, 0L, SEEK_END);
-    int bufSize = ftell(f);
+    int bufSize = ftell(f); // 파일 사이즈 저장
     
-    char **input = (char **)malloc((bufSize - 1) / 8 * sizeof(char *));
+    char **input = (char **)malloc((bufSize - 1) / 8 * sizeof(char *)); // 2차원 문자열 포인터에 메모리 할당
     
     if (input == NULL) {
         printf("Memory allocation failed.\n");
         return -1;
     }
     for (int i = 0; i < (bufSize - 1) / 8; i++) {
-        input[i] = (char *)malloc(8 * sizeof(char));
+        input[i] = (char *)malloc(sizeof(char));
         if (input[i] == NULL) {
             printf("Memory allocation failed.\n");
             return -1;
@@ -180,6 +166,7 @@ int main (void){
         while((c = (char) fgetc(f)) != EOF){
             printf("%c",c);
         }
+        
         for(; i <= 7; i++){
             printf("\n%d. ",i);
             switch(i){
@@ -198,6 +185,7 @@ int main (void){
                     break;
                 case 4:
                     printf("signed int: ");
+                    
                     storeInputData(input, bufSize-1, 32); // 32비트 단위로 쪼개어 저장
                     binaryToSignedInt((const char **)input, bufSize-1);
                     break;
